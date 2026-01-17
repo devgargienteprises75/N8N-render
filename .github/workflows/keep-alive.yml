@@ -2,10 +2,8 @@ name: Keep n8n Alive
 
 on:
   schedule:
-    # Har 10 minutes (UTC time)
     - cron: '*/10 * * * *'
   
-  # Manual trigger bhi kar sakte ho
   workflow_dispatch:
 
 jobs:
