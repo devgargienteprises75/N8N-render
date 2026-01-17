@@ -1,0 +1,35 @@
+name: Keep n8n Alive
+
+on:
+  schedule:
+    # Har 10 minutes (UTC time)
+    - cron: '*/10 * * * *'
+  
+  # Manual trigger bhi kar sakte ho
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Ping n8n Service
+        run: |
+          echo "🔔 Pinging n8n service..."
+          
+          # Health check endpoint ping karo
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://n8n-workflow-dgto.onrender.com/healthz)
+          
+          if [ $response -eq 200 ]; then
+            echo "✅ Service is alive! Response code: $response"
+          else
+            echo "⚠️ Service might be waking up... Response code: $response"
+            echo "Waiting 30 seconds..."
+            sleep 30
+            
+            # Retry after wake up
+            response=$(curl -s -o /dev/null -w "%{http_code}" https://n8n-workflow-dgto.onrender.com/healthz)
+            echo "🔄 Retry response code: $response"
+          fi
+          
+          echo "✅ Keep-alive ping completed at $(date)"
